@@ -1,0 +1,25 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:best-practices",
+    "docker:enableMajor",
+    "replacements:k8s-registry-move",
+    ":automergePr",
+    ":automergePatch",
+    ":automergeDigest",
+    ":disableRateLimiting",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    ":timezone(Europe/Paris)",
+    "github>m0nsterrr/octodns-mikrotik//.github/renovate/ignore_files.json5",
+    "github>m0nsterrr/octodns-mikrotik//.github/renovate/labels.json5",
+    "github>m0nsterrr/octodns-mikrotik//.github/renovate/devcontainer.json5",
+  ],
+  "dependencyDashboardTitle": "Renovate Dashboard 🤖",
+  "suppressNotifications": ["prEditedNotification", "prIgnoreNotification"],
+  "rebaseWhen": "conflicted",
+  "minimumReleaseAge": "3 days",
+  "labels": [
+    "dependencies",
+  ]
+}
