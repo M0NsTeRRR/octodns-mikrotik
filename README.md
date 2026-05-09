@@ -48,7 +48,17 @@ Install the package `pip install octodns-mikrotik`.
 <!-- template:begin:configuration -->
 ## 📜 Configuration
 <!-- template:end:configuration -->
-
+```yaml
+providers:
+  mikrotik:
+    class: octodns_mikrotik.MikrotikProvider
+    host: router.example.com
+    port: 443
+    user: env/MIKROTIK_USER
+    password: env/MIKROTIK_PASSWORD
+    scheme: https
+    ssl_verify: true
+```
 <!-- template:begin:dev -->
 ## 🛠️ Dev
 
