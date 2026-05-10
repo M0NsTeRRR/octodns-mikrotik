@@ -1,0 +1,72 @@
+[
+  {
+    "name": "example.test",
+    "type": "NS",
+    "ttl": 3600,
+    "ns": "ns1.example2.test"
+  },
+  {
+    "name": "example.test",
+    "type": "NS",
+    "ttl": 3600,
+    "ns": "ns2.example2.test"
+  },
+  {
+    "name": "test.example.test",
+    "type": "A",
+    "ttl": 3600,
+    "address": "192.0.2.1"
+  },
+  {
+    "name": "test.example.test",
+    "type": "AAAA",
+    "ttl": 300,
+    "address": "2001:db8::3"
+  },
+  {
+    "name": "test.example.test",
+    "type": "A",
+    "ttl": 3600,
+    "address": "192.0.2.4"
+  },
+  {
+    "name": "test.example.test",
+    "type": "AAAA",
+    "ttl": 300,
+    "address": "2001:db8::7"
+  },
+  {
+    "name": "test2.example.test",
+    "type": "CNAME",
+    "ttl": 3600,
+    "cname": "test.example.test"
+  },
+  {
+    "name": "mail.example.test",
+    "type": "MX",
+    "ttl": 3600,
+    "mx-preference": "10",
+    "mx-exchange": "mail.example.test"
+  },
+  {
+    "name": "test6.example.test",
+    "type": "NS",
+    "ttl": 3600,
+    "ns": "test.example.test"
+  },
+  {
+    "name": "_imap._tcp.example.test",
+    "type": "SRV",
+    "ttl": 3600,
+    "srv-port": "8000",
+    "srv-target": "test.example.test",
+    "srv-priority": "10",
+    "srv-weight": "0"
+  },
+  {
+    "name": "_dmarc.example.test",
+    "type": "TXT",
+    "ttl": 3600,
+    "text": "v=DMARC1; p=reject; aspf=s; adkim=s; rua=mailto:security@example.test; ruf=mailto:security@example.test;"
+  }
+]

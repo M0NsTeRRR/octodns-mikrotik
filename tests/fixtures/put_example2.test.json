@@ -1,0 +1,29 @@
+[
+  {
+    "name": "example2.test",
+    "type": "NS",
+    "ttl": 3600,
+    "ns": "ns1.example2.test"
+  },
+  {
+    "name": "example2.test",
+    "type": "NS",
+    "ttl": 3600,
+    "ns": "ns3.example2.test"
+  },
+  {
+    "name": "_imap._tcp.example2.test",
+    "type": "SRV",
+    "ttl": 3600,
+    "srv-port": "8001",
+    "srv-target": "test.example2.test",
+    "srv-priority": "10",
+    "srv-weight": "0"
+  },
+  {
+    "name": "test.example2.test",
+    "type": "A",
+    "ttl": 3600,
+    "address": "192.0.2.1"
+  }
+]

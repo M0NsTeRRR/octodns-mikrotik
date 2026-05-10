@@ -1,0 +1,41 @@
+[
+  {
+    ".id": "*1",
+    "ns": "ns1.example.test",
+    "disabled": "false",
+    "dynamic": "false",
+    "name": "example2.test",
+    "ttl": "1h",
+    "type": "NS"
+  },
+  {
+    ".id": "*2",
+    "ns": "ns2.example.test",
+    "disabled": "false",
+    "dynamic": "false",
+    "name": "example2.test",
+    "ttl": "1h",
+    "type": "NS"
+  },
+  {
+    ".id": "*3",
+    "srv-port": "8000",
+    "srv-target": "test.example.test",
+    "srv-priority": "10",
+    "srv-weight": "0",
+    "disabled": "false",
+    "dynamic": "false",
+    "name": "_imap._tcp.example2.test",
+    "ttl": "1h",
+    "type": "SRV"
+  },
+  {
+    ".id": "*4",
+    "text": "v=DMARC1; p=reject; aspf=s; adkim=s; rua=mailto:security@example.test; ruf=mailto:security@example.test;",
+    "disabled": "false",
+    "dynamic": "false",
+    "name": "_dmarc.example2.test",
+    "ttl": "1h",
+    "type": "TXT"
+  }
+]

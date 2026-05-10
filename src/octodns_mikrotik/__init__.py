@@ -56,11 +56,11 @@ class MikrotikClient(object):
     def __init__(
         self,
         host: str,
-        port: int,
         user: str,
         password: str,
-        scheme: _HTTP_SCHEME = "http",
-        ssl_verify: bool = True,
+        port: int,
+        scheme: _HTTP_SCHEME,
+        ssl_verify: bool,
     ):
         session = Session()
         session.headers.update(
@@ -120,10 +120,10 @@ class MikrotikProvider(BaseProvider):
         self,
         id: str,
         host: str,
-        port: int,
         user: str,
         password: str,
-        scheme: _HTTP_SCHEME = "http",
+        port: int = 443,
+        scheme: _HTTP_SCHEME = "https",
         ssl_verify: bool = True,
         *args,
         **kwargs,
@@ -131,7 +131,7 @@ class MikrotikProvider(BaseProvider):
         self.log = logging.getLogger(f"MikrotikProvider[{id}]")
         self.log.debug("__init__: id=%s, token=***", id)
         super().__init__(id, *args, **kwargs)
-        self._client = MikrotikClient(host, port, user, password, scheme, ssl_verify)
+        self._client = MikrotikClient(host, user, password, port, scheme, ssl_verify)
 
         self._records: list[dict] = []
 
@@ -156,6 +156,9 @@ class MikrotikProvider(BaseProvider):
 
         return _ttl
 
+    def _get_record_without_trailling_dot(self, record: str) -> str:
+        return record[:-1]
+
     def populate(self, zone: Zone, target: bool = False, lenient: bool = False) -> bool:
         self.log.debug(
             "populate: name=%s, target=%s, lenient=%s",
@@ -171,8 +174,11 @@ class MikrotikProvider(BaseProvider):
             if not self._get_fqdn(record["name"]).endswith(zone.name):
                 continue
 
-            _name = self._get_fqdn(record["name"]).rstrip(zone.name)
+            _name = self._get_fqdn(record["name"]).removesuffix(zone.name)
             _type = record["type"]
+
+            if _name.endswith("."):
+                _name = _name[:-1]
 
             if _type not in self.SUPPORTS:
                 self.log.warning(
@@ -235,7 +241,7 @@ class MikrotikProvider(BaseProvider):
         for record in records:
             values.append(
                 {
-                    "priority": int(record["mx-priority"]),
+                    "priority": int(record["mx-preference"]),
                     "exchange": self._get_fqdn(record["mx-exchange"]),
                 }
             )
@@ -285,7 +291,7 @@ class MikrotikProvider(BaseProvider):
     def _params_for_ip(self, record: ARecord | AaaaRecord) -> Iterator[dict[str, Any]]:
         for value in record.values:
             yield {
-                "name": record.fqdn,
+                "name": self._get_record_without_trailling_dot(record.fqdn),
                 "address": value,
                 "ttl": record.ttl,
                 "type": record._type,
@@ -296,8 +302,8 @@ class MikrotikProvider(BaseProvider):
 
     def _params_for_CNAME(self, record: CnameRecord) -> Iterator[dict[str, Any]]:
         yield {
-            "name": record.fqdn,
-            "cname": record.value,
+            "name": self._get_record_without_trailling_dot(record.fqdn),
+            "cname": self._get_record_without_trailling_dot(record.value),
             "ttl": record.ttl,
             "type": record._type,
         }
@@ -305,9 +311,9 @@ class MikrotikProvider(BaseProvider):
     def _params_for_MX(self, record: MxRecord) -> Iterator[dict[str, Any]]:
         for value in record.values:
             yield {
-                "name": record.fqdn,
-                "mx-exchange": value.exchange,
-                "mx-preference": value.preference,
+                "name": self._get_record_without_trailling_dot(record.fqdn),
+                "mx-exchange": self._get_record_without_trailling_dot(value.exchange),
+                "mx-preference": str(value.preference),
                 "ttl": record.ttl,
                 "type": record._type,
             }
@@ -315,8 +321,8 @@ class MikrotikProvider(BaseProvider):
     def _params_for_NS(self, record: NsRecord) -> Iterator[dict[str, Any]]:
         for value in record.values:
             yield {
-                "name": record.fqdn,
-                "cname": value,
+                "name": self._get_record_without_trailling_dot(record.fqdn),
+                "ns": self._get_record_without_trailling_dot(value),
                 "ttl": record.ttl,
                 "type": record._type,
             }
@@ -324,11 +330,11 @@ class MikrotikProvider(BaseProvider):
     def _params_for_SRV(self, record: SrvRecord) -> Iterator[dict[str, Any]]:
         for value in record.values:
             yield {
-                "name": record.fqdn,
-                "srv-port": value.port,
-                "srv-target": value.target,
-                "srv-priority": value.priority,
-                "srv-weight": value.weight,
+                "name": self._get_record_without_trailling_dot(record.fqdn),
+                "srv-port": str(value.port),
+                "srv-target": self._get_record_without_trailling_dot(value.target),
+                "srv-priority": str(value.priority),
+                "srv-weight": str(value.weight),
                 "ttl": record.ttl,
                 "type": record._type,
             }
@@ -336,8 +342,8 @@ class MikrotikProvider(BaseProvider):
     def _params_for_TXT(self, record: TxtRecord) -> Iterator[dict[str, Any]]:
         for value in record.values:
             yield {
-                "name": record.fqdn,
-                "text": value,
+                "name": self._get_record_without_trailling_dot(record.fqdn),
+                "text": value.replace("\\;", ";"),
                 "ttl": record.ttl,
                 "type": record._type,
             }
@@ -347,9 +353,6 @@ class MikrotikProvider(BaseProvider):
         params_for = getattr(self, f"_params_for_{new._type}")
 
         for param in params_for(new):
-            if param["name"] == ".":
-                param["name"] = ""
-
             self._client.put_record(param)
 
     def _apply_delete(self, changes: Change):
