@@ -21,30 +21,30 @@ from requests import Session
 from requests.auth import HTTPBasicAuth
 
 
-class MikrotikClientException(ProviderException):
+class MikroTikClientException(ProviderException):
     pass
 
 
-class MikrotikProviderException(ProviderException):
+class MikroTikProviderException(ProviderException):
     pass
 
 
-class MikrotikClientBadRequest(MikrotikClientException):
+class MikroTikClientBadRequest(MikroTikClientException):
     def __init__(self):
         super().__init__("Bad request")
 
 
-class MikrotikClientUnauthorized(MikrotikClientException):
+class MikroTikClientUnauthorized(MikroTikClientException):
     def __init__(self):
         super().__init__("Unauthorized")
 
 
-class MikrotikClientForbidden(MikrotikClientException):
+class MikroTikClientForbidden(MikroTikClientException):
     def __init__(self):
         super().__init__("Forbidden")
 
 
-class MikrotikClientNotFound(MikrotikClientException):
+class MikroTikClientNotFound(MikroTikClientException):
     def __init__(self):
         super().__init__("Not found")
 
@@ -52,7 +52,7 @@ class MikrotikClientNotFound(MikrotikClientException):
 _HTTP_SCHEME = Literal["http", "https"]
 
 
-class MikrotikClient(object):
+class MikroTikClient(object):
     def __init__(
         self,
         host: str,
@@ -78,13 +78,13 @@ class MikrotikClient(object):
         r = self._session.request(method, url, params=params, json=data)
 
         if r.status_code == 400:
-            raise MikrotikClientBadRequest()
+            raise MikroTikClientBadRequest()
         elif r.status_code == 401:
-            raise MikrotikClientUnauthorized()
+            raise MikroTikClientUnauthorized()
         elif r.status_code == 403:
-            raise MikrotikClientForbidden()
+            raise MikroTikClientForbidden()
         elif r.status_code == 404:
-            raise MikrotikClientNotFound()
+            raise MikroTikClientNotFound()
 
         if method != "DELETE":
             return r.json()
@@ -102,7 +102,7 @@ class MikrotikClient(object):
         self._request("DELETE", path)
 
 
-class MikrotikProvider(BaseProvider):
+class MikroTikProvider(BaseProvider):
     SUPPORTS_GEO = False
     SUPPORTS_ROOT_NS = True
     SUPPORTS_POOL_VALUE_STATUS = False
@@ -128,10 +128,10 @@ class MikrotikProvider(BaseProvider):
         *args,
         **kwargs,
     ):
-        self.log = logging.getLogger(f"MikrotikProvider[{id}]")
+        self.log = logging.getLogger(f"MikroTikProvider[{id}]")
         self.log.debug("__init__: id=%s, token=***", id)
         super().__init__(id, *args, **kwargs)
-        self._client = MikrotikClient(host, user, password, port, scheme, ssl_verify)
+        self._client = MikroTikClient(host, user, password, port, scheme, ssl_verify)
 
         self._records: list[dict] = []
 
@@ -152,7 +152,7 @@ class MikrotikProvider(BaseProvider):
         elif ttl.endswith("s"):
             pass
         else:
-            ValueError(f"Mikrotik TTL suffix {ttl[-1]} not handled")
+            ValueError(f"MikroTik TTL suffix {ttl[-1]} not handled")
 
         return _ttl
 

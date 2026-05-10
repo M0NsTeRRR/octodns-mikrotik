@@ -9,11 +9,11 @@ from octodns.zone import Zone
 from responses import matchers
 
 from octodns_mikrotik import (
-    MikrotikClientBadRequest,
-    MikrotikClientForbidden,
-    MikrotikClientNotFound,
-    MikrotikClientUnauthorized,
-    MikrotikProvider,
+    MikroTikClientBadRequest,
+    MikroTikClientForbidden,
+    MikroTikClientNotFound,
+    MikroTikClientUnauthorized,
+    MikroTikProvider,
 )
 
 HOST = "router.example.test"
@@ -23,13 +23,13 @@ PASSWORD = "password"
 
 def test_http_error():
     zone_name = "example.test."
-    provider = MikrotikProvider("mikrotik", HOST, USER, PASSWORD)
+    provider = MikroTikProvider("mikrotik", HOST, USER, PASSWORD)
 
     # 400
     with responses.RequestsMock() as mock:
         mock.get(f"https://{HOST}:443/rest/ip/dns/static", status=400)
 
-        with pytest.raises(MikrotikClientBadRequest):
+        with pytest.raises(MikroTikClientBadRequest):
             zone = Zone(zone_name, [])
             provider.populate(zone)
 
@@ -37,7 +37,7 @@ def test_http_error():
     with responses.RequestsMock() as mock:
         mock.get(f"https://{HOST}:443/rest/ip/dns/static", status=401)
 
-        with pytest.raises(MikrotikClientUnauthorized):
+        with pytest.raises(MikroTikClientUnauthorized):
             zone = Zone(zone_name, [])
             provider.populate(zone)
 
@@ -45,7 +45,7 @@ def test_http_error():
     with responses.RequestsMock() as mock:
         mock.get(f"https://{HOST}:443/rest/ip/dns/static", status=403)
 
-        with pytest.raises(MikrotikClientForbidden):
+        with pytest.raises(MikroTikClientForbidden):
             zone = Zone(zone_name, [])
             provider.populate(zone)
 
@@ -53,7 +53,7 @@ def test_http_error():
     with responses.RequestsMock() as mock:
         mock.get(f"https://{HOST}:443/rest/ip/dns/static", status=404)
 
-        with pytest.raises(MikrotikClientNotFound):
+        with pytest.raises(MikroTikClientNotFound):
             zone = Zone(zone_name, [])
             provider.populate(zone)
 
@@ -61,7 +61,7 @@ def test_http_error():
 def test_populate_empty_zone():
     zone_name = "example.test."
     auth = base64.b64encode(f"{USER}:{PASSWORD}".encode()).decode()
-    provider = MikrotikProvider("mikrotik", "router.example.test", USER, PASSWORD)
+    provider = MikroTikProvider("mikrotik", "router.example.test", USER, PASSWORD)
 
     with responses.RequestsMock() as mock:
         with open("tests/fixtures/empty_example.test.json") as f:
@@ -83,7 +83,7 @@ def test_populate_empty_zone():
 
 def test_populate_zone():
     zone_name = "example.test."
-    provider = MikrotikProvider("mikrotik", HOST, USER, PASSWORD)
+    provider = MikroTikProvider("mikrotik", HOST, USER, PASSWORD)
 
     wanted = Zone(zone_name, [])
     wanted.add_record(
@@ -189,7 +189,7 @@ def test_populate_zone():
 
 def test_apply_full_zone():
     zone_name = "example.test."
-    provider = MikrotikProvider("mikrotik", HOST, USER, PASSWORD)
+    provider = MikroTikProvider("mikrotik", HOST, USER, PASSWORD)
 
     expected = Zone(zone_name, [])
     expected.add_record(
@@ -306,7 +306,7 @@ def test_apply_full_zone():
 
 def test_apply_update_zone():
     zone_name = "example2.test."
-    provider = MikrotikProvider("mikrotik", HOST, USER, PASSWORD)
+    provider = MikroTikProvider("mikrotik", HOST, USER, PASSWORD)
 
     expected = Zone(zone_name, [])
     expected.add_record(
