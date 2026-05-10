@@ -76,7 +76,7 @@ def test_populate_empty_zone():
             )
 
         zone = Zone(zone_name, [])
-        provider.populate(zone)
+        assert not provider.populate(zone)
         assert 0 == len(zone.records)
         assert set() == zone.records
 
@@ -182,7 +182,7 @@ def test_populate_zone():
             )
 
         expected = Zone(zone_name, [])
-        provider.populate(expected)
+        assert provider.populate(expected)
         assert 8 == len(expected.records)
         assert expected.records == wanted.records
 
