@@ -5,7 +5,7 @@
 
 ### octodns-mikrotik
 
-_Mikrotik provider for octoDNS_
+_MikroTik provider for octoDNS_
 
 </div>
 
