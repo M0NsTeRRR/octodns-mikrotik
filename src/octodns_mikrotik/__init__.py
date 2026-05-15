@@ -89,6 +89,8 @@ class MikroTikClient(object):
         if method != "DELETE":
             return r.json()
 
+        return None
+
     def get_records(self) -> list[dict[str, str]]:
         path = "/ip/dns/static"
         return self._request("GET", path)
@@ -152,7 +154,7 @@ class MikroTikProvider(BaseProvider):
         elif ttl.endswith("s"):
             pass
         else:
-            ValueError(f"MikroTik TTL suffix {ttl[-1]} not handled")
+            raise ValueError(f"MikroTik TTL suffix {ttl[-1]} not handled")
 
         return _ttl
 
